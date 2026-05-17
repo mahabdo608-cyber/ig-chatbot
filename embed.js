@@ -246,6 +246,8 @@
     'html { scroll-behavior: smooth; }',
     '#kokobot-chat-root { position: fixed; bottom: 0; right: 0; z-index: 99999; }',
     '.kokobot-chat-widget, .kokobot-bubble, .kokobot-panel, .kokobot-backdrop { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }',
+    '.kokobot-tooltip { position: fixed; bottom: 92px; right: 16px; background: #1E293B; color: #FFFFFF; font-size: 12px; font-weight: 500; padding: 6px 12px; border-radius: 20px; white-space: nowrap; pointer-events: none; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 10000; }',
+    '.kokobot-tooltip::after { content: ""; position: absolute; bottom: -5px; right: 22px; border-width: 5px 5px 0; border-style: solid; border-color: #1E293B transparent transparent; }',
     '.kokobot-bubble { position: fixed; bottom: 24px; right: 24px; width: 60px; height: 60px; border-radius: 50%; background: ' + PRIMARY_COLOR + '; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 10000; transition: background 0.2s, transform 0.2s; }',
     '.kokobot-bubble:hover { background: #2563EB; transform: scale(1.05); }',
     '.kokobot-bubble.is-open { background: #3B82F6; }',
@@ -321,6 +323,7 @@
 
   function renderBubble(root) {
     root.innerHTML =
+      '<div class="kokobot-tooltip">Quick AI Assistant</div>' +
       '<button id="kokobot-bubble-btn" class="kokobot-bubble" aria-label="Open chat" aria-expanded="false">' +
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' +
       '</button>' +
@@ -584,35 +587,35 @@
         collectedFields.serviceType = text;
         return {
           text: 'Great choice! Would you like to leave your details and we\'ll have a specialist reach out to you?',
-          replies: ['Leave My Details', 'Browse Questions & Answers'],
+          replies: ['Talk to Human Expert', 'Browse Questions & Answers'],
           nextStage: 'postService',
           showInput: false
         };
       },
 
       postService: function (lowerText, text) {
-        if (lowerText === 'leave my details') {
+        if (lowerText === 'talk to human expert') {
           renderLeadForm();
           return null;
         }
         if (lowerText === 'browse questions & answers') {
           return {
             text: 'Sure! Pick a topic below:',
-            replies: TOPIC_OPTIONS.concat(['Leave My Details']),
+            replies: TOPIC_OPTIONS.concat(['Talk to Human Expert']),
             nextStage: 'topicSelect',
             showInput: false
           };
         }
         return {
           text: 'Would you like to leave your details or browse our FAQs?',
-          replies: ['Leave My Details', 'Browse Questions & Answers'],
+          replies: ['Talk to Human Expert', 'Browse Questions & Answers'],
           nextStage: 'postService',
           showInput: false
         };
       },
 
       qa: function (lowerText, text) {
-        if (lowerText === 'leave my details') {
+        if (lowerText === 'talk to human expert') {
           return {
             text: "Wonderful! Please fill out the form below and we'll get back to you as soon as possible.",
             replies: [],
@@ -624,7 +627,7 @@
         if (lowerText === 'browse questions & answers' || lowerText === 'browse questions') {
           return {
             text: 'Sure! Pick a topic below and I\'ll answer your questions about it:',
-            replies: TOPIC_OPTIONS.concat(['Leave My Details']),
+            replies: TOPIC_OPTIONS.concat(['Talk to Human Expert']),
             nextStage: 'topicSelect',
             showInput: false
           };
@@ -644,7 +647,7 @@
         if (remaining > 0) {
           return {
             text: botText,
-            replies: ['Ask Another Question', 'Leave My Details', 'Browse Questions & Answers'],
+            replies: ['Ask Another Question', 'Talk to Human Expert', 'Browse Questions & Answers'],
             nextStage: 'qa',
             showInput: false
           };
@@ -652,14 +655,14 @@
         botText += '\n\nBased on our conversation, I think it would be great to connect you with one of our specialists. You can leave your details and we\'ll reach out, or browse more questions by topic. What works best for you?';
         return {
           text: botText,
-          replies: ['Leave My Details', 'Browse Questions & Answers'],
+          replies: ['Talk to Human Expert', 'Browse Questions & Answers'],
           nextStage: 'conversion',
           showInput: false
         };
       },
 
       conversion: function (lowerText, text) {
-        if (lowerText === 'leave my details') {
+        if (lowerText === 'talk to human expert') {
           return {
             text: "Wonderful! Please fill out the form below and we'll get back to you as soon as possible.",
             replies: [],
@@ -670,14 +673,14 @@
         }
         return {
           text: 'Sure! Pick a topic below and I\'ll answer your questions about it:',
-          replies: TOPIC_OPTIONS.concat(['Leave My Details']),
+          replies: TOPIC_OPTIONS.concat(['Talk to Human Expert']),
           nextStage: 'topicSelect',
           showInput: false
         };
       },
 
       topicSelect: function (lowerText, text) {
-        if (lowerText === 'leave my details') {
+        if (lowerText === 'talk to human expert') {
           return {
             text: "Wonderful! Please fill out the form below and we'll get back to you as soon as possible.",
             replies: [],
@@ -694,21 +697,21 @@
           var remainingFAQs = faqs.slice(1).map(function (f) { return f.q; });
           return {
             text: faqs[0].a,
-            replies: remainingFAQs.concat(['Change Topic', 'Leave My Details']),
+            replies: remainingFAQs.concat(['Change Topic', 'Talk to Human Expert']),
             nextStage: 'topicQA',
             showInput: false
           };
         }
         return {
           text: 'Please pick one of the topics below:',
-          replies: TOPIC_OPTIONS.concat(['Leave My Details']),
+          replies: TOPIC_OPTIONS.concat(['Talk to Human Expert']),
           nextStage: 'topicSelect',
           showInput: false
         };
       },
 
       topicQA: function (lowerText, text) {
-        if (lowerText === 'leave my details') {
+        if (lowerText === 'talk to human expert') {
           return {
             text: "Wonderful! Please fill out the form below and we'll get back to you as soon as possible.",
             replies: [],
@@ -720,7 +723,7 @@
         if (lowerText === 'change topic') {
           return {
             text: 'Sure! Pick a topic below:',
-            replies: TOPIC_OPTIONS.concat(['Leave My Details']),
+            replies: TOPIC_OPTIONS.concat(['Talk to Human Expert']),
             nextStage: 'topicSelect',
             showInput: false
           };
@@ -740,14 +743,14 @@
           var remaining = topicFAQs.slice(matchedIdx + 1).map(function (f) { return f.q; });
           return {
             text: matchedFAQ.a,
-            replies: remaining.concat(['Change Topic', 'Leave My Details']),
+            replies: remaining.concat(['Change Topic', 'Talk to Human Expert']),
             nextStage: 'topicQA',
             showInput: false
           };
         }
         return {
           text: 'That\'s a great question about ' + selectedTopic + '! Our specialists can give you a detailed answer. Would you like to leave your details?',
-          replies: ['Change Topic', 'Leave My Details'],
+          replies: ['Change Topic', 'Talk to Human Expert'],
           nextStage: 'topicQA',
           showInput: false
         };
