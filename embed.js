@@ -849,26 +849,12 @@
 
     function readLeadFormFields() {
       var el;
-      if (leadFormStep === 1) {
-        el = document.getElementById('kokobot-lf-name');
-        if (el) leadFormData.name = el.value;
-        el = document.getElementById('kokobot-lf-phone');
-        if (el) leadFormData.phone = el.value;
-      } else if (leadFormStep === 2) {
-        el = document.getElementById('kokobot-lf-email');
-        if (el) leadFormData.email = el.value;
-        el = document.getElementById('kokobot-lf-city');
-        if (el) leadFormData.city = el.value;
-      } else if (leadFormStep === 3) {
-        el = document.getElementById('kokobot-lf-serviceType');
-        if (el) leadFormData.serviceType = el.value;
-        el = document.getElementById('kokobot-lf-budgetRange');
-        if (el) leadFormData.budgetRange = el.value;
-        el = document.getElementById('kokobot-lf-timeline');
-        if (el) leadFormData.timeline = el.value;
-        el = document.getElementById('kokobot-lf-bestContactTime');
-        if (el) leadFormData.bestContactTime = el.value;
-      }
+      el = document.getElementById('kokobot-lf-name');
+      if (el) leadFormData.name = el.value;
+      el = document.getElementById('kokobot-lf-phone');
+      if (el) leadFormData.phone = el.value;
+      el = document.getElementById('kokobot-lf-email');
+      if (el) leadFormData.email = el.value;
     }
 
 
