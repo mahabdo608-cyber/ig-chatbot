@@ -208,10 +208,10 @@
 
   /* ─── Lead Form State ─── */
   var leadFormStep = 1;
-  var leadFormData = { name: '', phone: '', email: '', city: '', serviceType: '', budgetRange: '', timeline: '', bestContactTime: '' };
+  var leadFormData = { name: '', phone: '', email: '', zip: '', city: '', serviceType: '', budgetRange: '', timeline: '', bestContactTime: '' };
   var leadFormErrors = {};
 
-  var SERVICE_TYPES = ['New Gate Installation', 'Gate Repair', 'Fence Installation', 'Access Control System', 'Security System', 'Commercial Project', 'Custom Fabrication', 'Other'];
+  var SERVICE_TYPES = ['New Gate Installation', 'Gate Repair', 'Fence Installation', 'Access Control System', 'Custom Fabrication', 'Gate Automation', 'HOA Gate Work', 'Commercial Project', 'Other'];
   var BUDGET_RANGES = ['Under $2,000', '$2,000 \u2013 $5,000', '$5,000 \u2013 $10,000', '$10,000 \u2013 $25,000', '$25,000+', 'Not Sure'];
   var TIMELINES = ['ASAP / Emergency', 'Within 1 Week', 'Within 1 Month', 'Within 3 Months', 'Just Researching'];
   var CONTACT_TIMES = ['Anytime', 'Morning (8am\u201312pm)', 'Afternoon (12pm\u20135pm)', 'Evening (5pm\u20138pm)'];
@@ -518,7 +518,7 @@
     /* ─── Welcome ─── */
     function sendWelcome() {
       addMessage("Hi there! I'm here to help you with gates, fencing, and security solutions from Interactive Gates & Security. To get started, which state are you located in?", 'bot');
-      addQuickReply(['Washington', 'Oregon', 'California']);
+      addQuickReply(['Seattle-Tacoma, WA', 'Vancouver-Portland, OR', 'LA - Orange County, CA']);
       stage = 'stateSelect';
       showInputArea(false);
     }
@@ -527,12 +527,12 @@
     var STATE_HANDLERS = {
       stateSelect: function (lowerText, text) {
         if (lowerText === 'washington' || lowerText === 'oregon' || lowerText === 'california') {
-          var stateKey = lowerText === 'washington' ? 'WA' : lowerText === 'oregon' ? 'OR' : 'CA';
+          var stateKey = lowerText.indexOf('wa') !== -1 ? 'WA' : lowerText.indexOf('or') !== -1 ? 'OR' : 'CA';
           collectedFields.state = stateKey;
           return {
-            text: 'Great, ' + STATE_NAMES[stateKey] + '! We cover that area. Which city are you in?',
-            replies: CITIES[stateKey] || [],
-            nextStage: 'citySelect',
+            text: 'Great! We cover that area. What type of service are you looking for?',
+            replies: ['New Gate Installation', 'Gate Repair', 'Fence Installation', 'Access Control System', 'Custom Fabrication', 'Gate Automation', 'HOA Gate Work', 'Commercial Project', 'Other'],
+            nextStage: 'serviceSelect',
             showInput: false
           };
         }
@@ -575,9 +575,30 @@
       serviceSelect: function (lowerText, text) {
         collectedFields.serviceType = text;
         return {
-          text: 'Great choice! I can help with ' + text + '. What would you like to know more about?',
-          replies: ['Pricing & Estimates', 'Installation Process', 'Materials & Options', 'Timeline', 'Warranty'],
-          nextStage: 'qa',
+          text: 'Great choice! Would you like to leave your details and we\'ll have a specialist reach out to you?',
+          replies: ['Leave My Details', 'Browse Questions & Answers'],
+          nextStage: 'postService',
+          showInput: false
+        };
+      },
+
+      postService: function (lowerText, text) {
+        if (lowerText === 'leave my details') {
+          showLeadForm();
+          return null;
+        }
+        if (lowerText === 'browse questions & answers') {
+          return {
+            text: 'Sure! Pick a topic below:',
+            replies: TOPIC_OPTIONS.concat(['Leave My Details']),
+            nextStage: 'topicSelect',
+            showInput: false
+          };
+        }
+        return {
+          text: 'Would you like to leave your details or browse our FAQs?',
+          replies: ['Leave My Details', 'Browse Questions & Answers'],
+          nextStage: 'postService',
           showInput: false
         };
       },
@@ -808,6 +829,7 @@
       html += formFieldHTML('name', 'Full Name', 'text', leadFormData.name);
       html += formFieldHTML('phone', 'Phone Number', 'tel', leadFormData.phone);
       html += formFieldHTML('email', 'Email Address', 'email', leadFormData.email);
+      html += formFieldHTML('zip', 'Zip Code', 'text', leadFormData.zip);
       html += '</div>';
       html += '<div class="kokobot-lf-buttons">';
       html += '<button class="kokobot-lf-btn-primary" id="kokobot-lf-submit">Send Request</button>';
@@ -855,6 +877,8 @@
       if (el) leadFormData.phone = el.value;
       el = document.getElementById('kokobot-lf-email');
       if (el) leadFormData.email = el.value;
+      el = document.getElementById('kokobot-lf-zip');
+      if (el) leadFormData.zip = el.value;
     }
 
 
@@ -878,6 +902,7 @@
         'Phone: ' + leadFormData.phone + '\n' +
         'Email: ' + leadFormData.email + '\n' +
         'City: ' + (collectedFields.city || '') + '\n' +
+        'Zip: ' + (leadFormData.zip || '') + '\n' +
         'State: ' + (collectedFields.state || '') + '\n' +
         'Service: ' + (collectedFields.serviceType || '')
       );
