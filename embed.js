@@ -900,31 +900,7 @@
       });
     }
     function bindLeadFormEvents() {
-      var backBtn = document.getElementById('kokobot-lf-back');
-      var nextBtn = document.getElementById('kokobot-lf-next');
       var submitBtn = document.getElementById('kokobot-lf-submit');
-
-      if (backBtn) {
-        backBtn.addEventListener('click', function () {
-          readLeadFormFields();
-          leadFormStep--;
-          leadFormErrors = {};
-          renderLeadFormStep();
-        });
-      }
-
-      if (nextBtn) {
-        nextBtn.addEventListener('click', function () {
-          readLeadFormFields();
-          if (validateLeadStep(leadFormStep)) {
-            leadFormStep++;
-            leadFormErrors = {};
-            renderLeadFormStep();
-          } else {
-            renderLeadFormStep();
-          }
-        });
-      }
 
       if (submitBtn) {
         submitBtn.addEventListener('click', function () {
@@ -938,10 +914,8 @@
         inputs[i].addEventListener('keydown', function (e) {
           if (e.key === 'Enter') {
             e.preventDefault();
-            var n = document.getElementById('kokobot-lf-next');
             var s = document.getElementById('kokobot-lf-submit');
-            if (n) n.click();
-            else if (s) s.click();
+            if (s) s.click();
           }
         });
       }
