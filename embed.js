@@ -881,7 +881,7 @@
         'State: ' + (collectedFields.state || '') + '\n' +
         'Service: ' + (collectedFields.serviceType || '')
       );
-      window.location.href = 'mailto:info@interactivegates.com?subject=' + subject + '&body=' + body;
+      window.location.href = 'mailto:contact@interactivegates.com?subject=' + subject + '&body=' + body;
 
       leadSubmitted = true;
       leadFormContainer.innerHTML =
