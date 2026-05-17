@@ -330,8 +330,8 @@
       '<div id="kokobot-panel" class="kokobot-panel" style="display:none" role="dialog" aria-modal="true" aria-label="Interactive Gates Chat">' +
         '<div class="kokobot-header">' +
           '<div style="display:flex;align-items:center;gap:8px">' +
-            '<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#3B82F6,#1D4ED8);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="color:#FFFFFF;font-weight:700;font-size:13px">IG</span></div>' +
-            '<div><div style="color:#1E293B;font-size:14px;font-weight:600">Interactive Gates</div><div style="display:flex;align-items:center;gap:4px;color:#64748B;font-size:11px"><span style="width:7px;height:7px;border-radius:50%;background:#22C55E;display:inline-block"></span>Online</div></div>' +
+            '<img src="https://cdn.prod.website-files.com/665cdcb288603ef24297e369/6814fd30225b212b5132c214_Interactive%20gates%20square%20white.jpg" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0" alt="Interactive Gates" />' +
+            '<div><div style="color:#1E293B;font-size:14px;font-weight:600">Interactive Gates AI Assistant</div><div style="display:flex;align-items:center;gap:4px;color:#64748B;font-size:11px"><span style="width:7px;height:7px;border-radius:50%;background:#22C55E;display:inline-block"></span>Online</div></div>' +
           '</div>' +
           '<button id="kokobot-close-btn" style="background:none;border:none;color:#64748B;cursor:pointer;font-size:18px;padding:4px" aria-label="Close chat">&#10005;</button>' +
         '</div>' +
