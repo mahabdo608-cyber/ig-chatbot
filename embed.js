@@ -229,7 +229,7 @@
   }
 
   function validateLeadStep(step) {
-    var fields = step === 1 ? ['name', 'phone'] : step === 2 ? ['email', 'city'] : ['serviceType', 'budgetRange', 'timeline', 'bestContactTime'];
+    var fields = ['name', 'phone', 'email'];
     var errs = {};
     fields.forEach(function (f) { var e = validateLeadField(f, leadFormData[f]); if (e) errs[f] = e; });
     leadFormErrors = errs;
@@ -272,7 +272,7 @@
     '.kokobot-send-btn { width: 40px; height: 40px; border-radius: 50%; background: ' + PRIMARY_COLOR + '; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }',
     '.kokobot-send-btn:hover { background: #2563EB; }',
     '.kokobot-send-btn:disabled { opacity: 0.4; cursor: not-allowed; }',
-    '@media (max-width: 640px) { .kokobot-panel { bottom: 0; right: 0; left: 0; width: 100%; height: 100%; border-radius: 0; } .kokobot-bubble { bottom: 20px; right: 20px; } }',
+    '@media (max-width: 640px) { .kokobot-panel { bottom: 80px; right: 12px; left: 12px; width: auto; height: 480px; border-radius: 16px; } .kokobot-bubble { bottom: 16px; right: 16px; } }',
     '@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }',
     '.kokobot-lead-form { border-top: 1px solid #E2E8F0; background: #FFFFFF; padding: 16px; display: flex; flex-direction: column; flex: 1; overflow: hidden; min-height: 0; }',
     '.kokobot-lead-form h3 { margin: 0 0 4px; color: #1E293B; font-size: 15px; font-weight: 600; }',
@@ -804,49 +804,19 @@
       html += '<div class="kokobot-lead-form">';
       html += '<h3>Get a Free Estimate</h3>';
       html += '<div class="subtitle">Leave your details and we\'ll get back to you.</div>';
-      html += '<div class="kokobot-lf-step-indicator">';
-      for (var s = 1; s <= 3; s++) {
-        html += '<div class="kokobot-lf-dot' + (s === leadFormStep ? ' active' : '') + (s < leadFormStep ? ' active' : '') + '"></div>';
-        if (s < 3) html += '<div class="kokobot-lf-line' + (s < leadFormStep ? ' active' : '') + '"></div>';
-      }
-      html += '</div>';
-      var stepLabel = leadFormStep === 1 ? 'Contact Info' : leadFormStep === 2 ? 'Location' : 'Project Details';
-      html += '<div class="kokobot-lf-step-label">Step ' + leadFormStep + ' of 3: ' + escHtml(stepLabel) + '</div>';
       html += '<div class="kokobot-lf-fields">';
-
-      if (leadFormStep === 1) {
-        html += formFieldHTML('name', 'Name', 'text', leadFormData.name);
-        html += formFieldHTML('phone', 'Phone', 'tel', leadFormData.phone);
-      } else if (leadFormStep === 2) {
-        html += formFieldHTML('email', 'Email', 'email', leadFormData.email);
-        html += formFieldHTML('city', 'City', 'text', leadFormData.city);
-      } else if (leadFormStep === 3) {
-        html += formSelectHTML('serviceType', 'Service Type', SERVICE_TYPES, leadFormData.serviceType);
-        html += formSelectHTML('budgetRange', 'Budget Range', BUDGET_RANGES, leadFormData.budgetRange);
-        html += formSelectHTML('timeline', 'Timeline', TIMELINES, leadFormData.timeline);
-        html += formSelectHTML('bestContactTime', 'Best Contact Time', CONTACT_TIMES, leadFormData.bestContactTime);
-      }
-
+      html += formFieldHTML('name', 'Full Name', 'text', leadFormData.name);
+      html += formFieldHTML('phone', 'Phone Number', 'tel', leadFormData.phone);
+      html += formFieldHTML('email', 'Email Address', 'email', leadFormData.email);
       html += '</div>';
-
       html += '<div class="kokobot-lf-buttons">';
-      if (leadFormStep > 1) {
-        html += '<button class="kokobot-lf-btn-secondary" id="kokobot-lf-back">Back</button>';
-      }
-      if (leadFormStep < 3) {
-        html += '<button class="kokobot-lf-btn-primary" id="kokobot-lf-next">Next</button>';
-      } else {
-        html += '<button class="kokobot-lf-btn-primary" id="kokobot-lf-submit">Submit</button>';
-      }
+      html += '<button class="kokobot-lf-btn-primary" id="kokobot-lf-submit">Send Request</button>';
       html += '</div>';
-
       if (Object.keys(leadFormErrors).length > 0) {
         var firstError = leadFormErrors[Object.keys(leadFormErrors)[0]];
         if (firstError) html += '<div class="kokobot-lf-error">' + escHtml(firstError) + '</div>';
       }
-
       html += '</div>';
-
       leadFormContainer.innerHTML = html;
       bindLeadFormEvents();
     }
@@ -901,9 +871,10 @@
       }
     }
 
+
     function submitLeadForm() {
       readLeadFormFields();
-      if (!validateLeadStep(3)) {
+      if (!validateLeadStep(1)) {
         renderLeadFormStep();
         return;
       }
@@ -911,84 +882,37 @@
       var submitBtn = document.getElementById('kokobot-lf-submit');
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Submitting...';
+        submitBtn.textContent = 'Sending...';
       }
 
-      lastSubmitPayload = {
-        name: leadFormData.name,
-        phone: leadFormData.phone,
-        email: leadFormData.email,
-        city: leadFormData.city,
-        serviceType: leadFormData.serviceType,
-        budgetRange: leadFormData.budgetRange,
-        timeline: leadFormData.timeline,
-        bestContactTime: leadFormData.bestContactTime,
-        state: collectedFields.state || 'WA',
-        sessionId: SESSION_ID,
-      };
+      // Send via mailto (no backend needed)
+      var subject = encodeURIComponent('New Gate Estimate Request');
+      var body = encodeURIComponent(
+        'Name: ' + leadFormData.name + '\n' +
+        'Phone: ' + leadFormData.phone + '\n' +
+        'Email: ' + leadFormData.email + '\n' +
+        'City: ' + (collectedFields.city || '') + '\n' +
+        'State: ' + (collectedFields.state || '') + '\n' +
+        'Service: ' + (collectedFields.serviceType || '')
+      );
+      window.location.href = 'mailto:info@interactivegates.com?subject=' + subject + '&body=' + body;
 
-      var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
-      var timeoutId = safeSetTimeout(function () {
-        if (controller) controller.abort();
-      }, FETCH_TIMEOUT_MS);
-
-      fetch(API_URL + '/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(lastSubmitPayload),
-        signal: controller ? controller.signal : undefined
-      })
-        .then(function (res) {
-          safeClearTimeout(timeoutId);
-          if (!res.ok) throw new Error('Submission failed (HTTP ' + res.status + ')');
-          return res.json();
-        })
-        .then(function () {
-          leadSubmitted = true;
-          leadFormContainer.innerHTML =
-            '<div class="kokobot-success-view">' +
-              '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>' +
-              '<h3>Thank You!</h3>' +
-              '<p>A specialist will contact you soon.</p>' +
-              '<button id="kokobot-lf-done">Close</button>' +
-            '</div>';
-          document.getElementById('kokobot-lf-done').addEventListener('click', function () {
-            hideLeadForm();
-            showMessages();
-            addMessage("Thank you for leaving your details, we will get back to you with the relevant information as soon as possible.", 'bot');
-            addQuickReply(['Browse Questions & Answers', 'Start Over']);
-            showInputArea(true);
-          });
-        })
-        .catch(function (err) {
-          safeClearTimeout(timeoutId);
-          logError('lead-submit', err);
-          var aborted = err && err.name === 'AbortError';
-          var errorMsg = aborted
-            ? 'Connection timed out. Please check your internet and try again.'
-            : 'Something went wrong. Please try again.';
-
-          leadFormContainer.innerHTML =
-            '<div class="kokobot-lead-form">' +
-              '<div class="kokobot-lf-error">' +
-                escHtml(errorMsg) +
-                '<button id="kokobot-lf-retry">Try Again</button>' +
-              '</div>' +
-            '</div>';
-
-          var retryBtn = document.getElementById('kokobot-lf-retry');
-          if (retryBtn) {
-            retryBtn.addEventListener('click', function () {
-              if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit';
-              }
-              renderLeadFormStep();
-            });
-          }
-        });
+      leadSubmitted = true;
+      leadFormContainer.innerHTML =
+        '<div class="kokobot-success-view">' +
+          '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>' +
+          '<h3>Thank You!</h3>' +
+          '<p>A specialist will contact you soon.</p>' +
+          '<button id="kokobot-lf-done">Close</button>' +
+        '</div>';
+      document.getElementById('kokobot-lf-done').addEventListener('click', function () {
+        hideLeadForm();
+        showMessages();
+        addMessage("Thank you for leaving your details, we will get back to you as soon as possible.", 'bot');
+        addQuickReply(['Browse Questions & Answers', 'Start Over']);
+        showInputArea(true);
+      });
     }
-
     function bindLeadFormEvents() {
       var backBtn = document.getElementById('kokobot-lf-back');
       var nextBtn = document.getElementById('kokobot-lf-next');
