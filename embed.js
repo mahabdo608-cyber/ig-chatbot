@@ -526,9 +526,17 @@
     /* ─── State Machine Handlers ─── */
     var STATE_HANDLERS = {
       stateSelect: function (lowerText, text) {
-        if (lowerText === 'washington' || lowerText === 'oregon' || lowerText === 'california') {
-          var stateKey = lowerText.indexOf('wa') !== -1 ? 'WA' : lowerText.indexOf('or') !== -1 ? 'OR' : 'CA';
+        var stateKey = null;
+        if (lowerText.indexOf('wa') !== -1 || lowerText.indexOf('seattle') !== -1 || lowerText.indexOf('tacoma') !== -1) {
+          stateKey = 'WA';
+        } else if (lowerText.indexOf('or') !== -1 || lowerText.indexOf('portland') !== -1 || lowerText.indexOf('vancouver') !== -1) {
+          stateKey = 'OR';
+        } else if (lowerText.indexOf('ca') !== -1 || lowerText.indexOf('la') !== -1 || lowerText.indexOf('los angeles') !== -1 || lowerText.indexOf('orange') !== -1) {
+          stateKey = 'CA';
+        }
+        if (stateKey) {
           collectedFields.state = stateKey;
+          collectedFields.region = text;
           return {
             text: 'Great! We cover that area. What type of service are you looking for?',
             replies: ['New Gate Installation', 'Gate Repair', 'Fence Installation', 'Access Control System', 'Custom Fabrication', 'Gate Automation', 'HOA Gate Work', 'Commercial Project', 'Other'],
@@ -537,10 +545,10 @@
           };
         }
         return {
-          text: "Thank you so much for your interest! Unfortunately, we don't currently serve your area. We're working on expanding our coverage, so please check back in the future. Wishing you all the best!",
-          replies: [],
-          nextStage: 'conversion',
-          showInput: true
+          text: 'Please select one of the areas below:',
+          replies: ['Seattle-Tacoma, WA', 'Vancouver-Portland, OR', 'LA - Orange County, CA'],
+          nextStage: 'stateSelect',
+          showInput: false
         };
       },
 
@@ -584,7 +592,7 @@
 
       postService: function (lowerText, text) {
         if (lowerText === 'leave my details') {
-          showLeadForm();
+          renderLeadForm();
           return null;
         }
         if (lowerText === 'browse questions & answers') {
@@ -775,6 +783,13 @@
       var delay = 400 + Math.random() * 400;
       safeSetTimeout(function () {
         var result = handler(lowerText, text);
+
+        // handler returned null means it handled UI directly (e.g. renderLeadForm)
+        if (!result) {
+          removeTyping();
+          return;
+        }
+
         stage = result.nextStage || stage;
 
         removeTyping();
@@ -804,7 +819,7 @@
 
     function renderLeadForm() {
       leadFormStep = 1;
-      leadFormData = { name: '', phone: '', email: '', city: '', serviceType: '', budgetRange: '', timeline: '', bestContactTime: '' };
+      leadFormData = { name: '', phone: '', email: '', zip: '', serviceType: '', state: '', region: '' };
       leadFormErrors = {};
       hideMessages();
       showInputArea(false);
@@ -813,9 +828,9 @@
       leadFormContainer.style.flexDirection = 'column';
       leadFormContainer.style.overflow = 'hidden';
 
-      if (collectedFields.city) leadFormData.city = collectedFields.city;
       if (collectedFields.serviceType) leadFormData.serviceType = collectedFields.serviceType;
       if (collectedFields.state) leadFormData.state = collectedFields.state;
+      if (collectedFields.region) leadFormData.region = collectedFields.region;
 
       renderLeadFormStep();
     }
@@ -901,9 +916,8 @@
         'Name: ' + leadFormData.name + '\n' +
         'Phone: ' + leadFormData.phone + '\n' +
         'Email: ' + leadFormData.email + '\n' +
-        'City: ' + (collectedFields.city || '') + '\n' +
         'Zip: ' + (leadFormData.zip || '') + '\n' +
-        'State: ' + (collectedFields.state || '') + '\n' +
+        'Area: ' + (collectedFields.region || collectedFields.state || '') + '\n' +
         'Service: ' + (collectedFields.serviceType || '')
       );
       window.location.href = 'mailto:contact@interactivegates.com?subject=' + subject + '&body=' + body;
