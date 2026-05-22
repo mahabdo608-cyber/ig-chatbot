@@ -325,7 +325,7 @@
     root.innerHTML =
       '<div class="kokobot-tooltip">Quick AI Assistant</div>' +
       '<button id="kokobot-bubble-btn" class="kokobot-bubble" aria-label="Open chat" aria-expanded="false">' +
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' +
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3" fill="rgba(255,255,255,0.25)"/><path d="M3 21v-1a6 6 0 0 1 6-6h0a6 6 0 0 1 5.4 3.4"/><rect x="14" y="13" width="8" height="6" rx="2" fill="rgba(255,255,255,0.2)"/><path d="M17 19l-2 2v-2"/><circle cx="17" cy="16" r="0.8" fill="#FFFFFF"/><circle cx="19" cy="16" r="0.8" fill="#FFFFFF"/></svg>' +
       '</button>' +
       '<div id="kokobot-panel" class="kokobot-panel" style="display:none" role="dialog" aria-modal="true" aria-label="Interactive Gates Chat">' +
         '<div class="kokobot-header">' +
