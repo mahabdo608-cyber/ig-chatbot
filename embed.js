@@ -530,11 +530,11 @@
     var STATE_HANDLERS = {
       stateSelect: function (lowerText, text) {
         var stateKey = null;
-        if (lowerText.indexOf('wa') !== -1 || lowerText.indexOf('seattle') !== -1 || lowerText.indexOf('tacoma') !== -1) {
+        if (lowerText.indexOf('seattle') !== -1 || lowerText.indexOf('tacoma') !== -1 || lowerText === 'seattle-tacoma, wa') {
           stateKey = 'WA';
-        } else if (lowerText.indexOf('or') !== -1 || lowerText.indexOf('portland') !== -1 || lowerText.indexOf('vancouver') !== -1) {
+        } else if (lowerText.indexOf('portland') !== -1 || lowerText.indexOf('vancouver') !== -1 || lowerText === 'vancouver-portland, or') {
           stateKey = 'OR';
-        } else if (lowerText.indexOf('ca') !== -1 || lowerText.indexOf('la') !== -1 || lowerText.indexOf('los angeles') !== -1 || lowerText.indexOf('orange') !== -1) {
+        } else if (lowerText.indexOf('la') !== -1 || lowerText.indexOf('los angeles') !== -1 || lowerText.indexOf('orange county') !== -1 || lowerText === 'la - orange county, ca') {
           stateKey = 'CA';
         }
         if (stateKey) {
