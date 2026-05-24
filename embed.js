@@ -923,7 +923,10 @@
         'Area: ' + (collectedFields.region || collectedFields.state || '') + '\n' +
         'Service: ' + (collectedFields.serviceType || '')
       );
-      window.location.href = 'mailto:contact@interactivegates.com?subject=' + subject + '&body=' + body;
+      var emailTo = 'contact@interactivegates.com'; // Seattle default
+      if (collectedFields.state === 'OR') emailTo = 'Portland@interactivegates.com';
+      else if (collectedFields.state === 'CA') emailTo = 'LosAngeles@interactivegates.com';
+      window.location.href = 'mailto:' + emailTo + '?subject=' + subject + '&body=' + body;
 
       leadSubmitted = true;
       leadFormContainer.innerHTML =
