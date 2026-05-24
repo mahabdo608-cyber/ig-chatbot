@@ -913,20 +913,31 @@
         submitBtn.textContent = 'Sending...';
       }
 
-      // Send via mailto (no backend needed)
-      var subject = encodeURIComponent('New Gate Estimate Request');
-      var body = encodeURIComponent(
-        'Name: ' + leadFormData.name + '\n' +
-        'Phone: ' + leadFormData.phone + '\n' +
-        'Email: ' + leadFormData.email + '\n' +
-        'Zip: ' + (leadFormData.zip || '') + '\n' +
-        'Area: ' + (collectedFields.region || collectedFields.state || '') + '\n' +
-        'Service: ' + (collectedFields.serviceType || '')
-      );
-      var emailTo = 'contact@interactivegates.com'; // Seattle default
+      // Determine target email based on region
+      var emailTo = 'contact@interactivegates.com';
       if (collectedFields.state === 'OR') emailTo = 'Portland@interactivegates.com';
       else if (collectedFields.state === 'CA') emailTo = 'LosAngeles@interactivegates.com';
-      window.location.href = 'mailto:' + emailTo + '?subject=' + subject + '&body=' + body;
+
+      // Send to Make webhook
+      var payload = {
+        name: leadFormData.name,
+        phone: leadFormData.phone,
+        email: leadFormData.email,
+        zip: leadFormData.zip || '',
+        area: collectedFields.region || collectedFields.state || '',
+        state: collectedFields.state || '',
+        service: collectedFields.serviceType || '',
+        send_to: emailTo,
+        submitted_at: new Date().toISOString()
+      };
+
+      fetch('https://hook.us2.make.com/x5e8hr8dzpdyg4e7lmyt7uzpn5hkn69r', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).catch(function () {
+        // Silent fail — success screen still shows
+      });
 
       leadSubmitted = true;
       leadFormContainer.innerHTML =
